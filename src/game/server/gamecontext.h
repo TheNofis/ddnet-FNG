@@ -248,6 +248,8 @@ public:
 	// helper functions
 	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount, CClientMask Mask = CClientMask().set());
 	void MakeLaserTextPoints(vec2 pPos, int pOwner, int pPoints);
+	void MakeLaserText(vec2 pPos, int pOwner, const char *pText);
+
 
 
 	// ddnet-insta added SprayMask to CreateExplosion
@@ -534,6 +536,8 @@ private:
 	static void ConModerate(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConList(IConsole::IResult *pResult, void *pUserData);
+	static void ConLaserText(IConsole::IResult *pResult, void *pUserData);
+
 	static void ConSetDDRTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConUninvite(IConsole::IResult *pResult, void *pUserData);
 	static void ConFreezeHammer(IConsole::IResult *pResult, void *pUserData);

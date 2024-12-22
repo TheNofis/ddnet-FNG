@@ -283,9 +283,12 @@ void CGameControllerBaseFng::OnSpikeHandled(CPlayer *pKiller, short SpikeTile){
 }
 
 inline void CGameControllerBaseFng::UpdateScoresAndDisplayPoints(CPlayer *pKiller, short playerScore, short teamScore){
+	if(!pKiller)return;
 	pKiller->AddScore(playerScore-1);
 	AddTeamscore(pKiller->GetTeam(), teamScore);
-	GameServer()->MakeLaserTextPoints(pKiller->GetCharacter()->m_Pos, pKiller->GetCid(), playerScore);
+	
+	if(pKiller->IsPlaying())
+		GameServer()->MakeLaserTextPoints(pKiller->GetCharacter()->GetPos(), pKiller->GetCid(), playerScore);
 }
 
 void CGameControllerBaseFng::SnapDDNetCharacter(int SnappingClient, CCharacter *pChr, CNetObj_DDNetCharacter *pDDNetCharacter)
