@@ -48,6 +48,8 @@
 #include "player.h"
 #include "score.h"
 
+#include "laserText.h"
+
 // Not thread-safe!
 class CClientChatLogger : public ILogger
 {
@@ -235,6 +237,13 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientId)
 	if(ClientId < 0 || ClientId >= MAX_CLIENTS || !m_apPlayers[ClientId])
 		return 0;
 	return m_apPlayers[ClientId]->GetCharacter();
+}
+void CGameContext::MakeLaserTextPoints(vec2 pPos, int pOwner, int pPoints){
+	char text[10];
+	if(pPoints >= 0) str_format(text, 10, "+%d", pPoints);
+	else str_format(text, 10, "%d", pPoints);
+	pPos.y -= 20.0 * 2.5;
+	new CLaserText(&m_World, pPos, pOwner, Server()->TickSpeed() * 3, text, (int)(strlen(text)));
 }
 
 bool CGameContext::EmulateBug(int Bug)

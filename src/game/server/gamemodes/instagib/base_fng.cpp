@@ -207,60 +207,10 @@ void CGameControllerBaseFng::OnSpike(class CCharacter *pChr, int SpikeTile)
 
 	if(pKiller)
 	{
-		// all scores are +1
-		// from the kill it self
 
-		if(SpikeTile == TILE_FNG_SPIKE_NORMAL)
-		{
-			pKiller->AddScore(2);
-			AddTeamscore(pKiller->GetTeam(), 5);
-		}
-		if(SpikeTile == TILE_FNG_SPIKE_GOLD)
-		{
-			if(IsStatTrack())
-				pKiller->m_Stats.m_GoldSpikes++;
-			pKiller->AddScore(7);
-			AddTeamscore(pKiller->GetTeam(), 12);
-		}
-		if(SpikeTile == TILE_FNG_SPIKE_GREEN)
-		{
-			if(IsStatTrack())
-				pKiller->m_Stats.m_GreenSpikes++;
-			pKiller->AddScore(5);
-			AddTeamscore(pKiller->GetTeam(), 15);
-		}
-		if(SpikeTile == TILE_FNG_SPIKE_PURPLE)
-		{
-			if(IsStatTrack())
-				pKiller->m_Stats.m_PurpleSpikes++;
-			pKiller->AddScore(9);
-			AddTeamscore(pKiller->GetTeam(), 18);
-		}
+		// Give score and render text laser
+		OnSpikeHandled(pKiller, SpikeTile);
 
-		if(SpikeTile == TILE_FNG_SPIKE_RED)
-		{
-			if(pKiller->GetTeam() == TEAM_RED || !IsTeamPlay())
-			{
-				pKiller->AddScore(4);
-				AddTeamscore(pKiller->GetTeam(), 10);
-			}
-			else
-			{
-				OnWrongSpike(pKiller);
-			}
-		}
-		if(SpikeTile == TILE_FNG_SPIKE_BLUE)
-		{
-			if(pKiller->GetTeam() == TEAM_BLUE || !IsTeamPlay())
-			{
-				pKiller->AddScore(4);
-				AddTeamscore(pKiller->GetTeam(), 10);
-			}
-			else
-			{
-				OnWrongSpike(pKiller);
-			}
-		}
 
 		// yes you can multi wrong spikes
 		pKiller->m_LastKillTime = pKiller->HandleMulti();
@@ -293,6 +243,49 @@ void CGameControllerBaseFng::OnSpike(class CCharacter *pChr, int SpikeTile)
 		pChr->Die(pChr->GetPlayer()->GetCid(), WEAPON_WORLD);
 	else
 		pChr->Die(LastToucherId, WEAPON_NINJA);
+}
+
+void CGameControllerBaseFng::OnSpikeHandled(CPlayer *pKiller, short SpikeTile){
+	// all scores are +1
+	// from the kill it self
+
+	switch (SpikeTile)
+	{
+		case TILE_FNG_SPIKE_NORMAL:
+			UpdateScoresAndDisplayPoints(pKiller, g_Config.m_SvPlayerScoreSpikeNormal, g_Config.m_SvTeamScoreSpikeNormal);
+			break;
+		case TILE_FNG_SPIKE_GOLD:
+			if(IsStatTrack())
+				pKiller->m_Stats.m_GoldSpikes++;
+			UpdateScoresAndDisplayPoints(pKiller, g_Config.m_SvPlayerScoreSpikeGold, g_Config.m_SvTeamScoreSpikeGold);
+			break;
+		case TILE_FNG_SPIKE_GREEN:
+			if(IsStatTrack())
+				pKiller->m_Stats.m_GreenSpikes++;
+			UpdateScoresAndDisplayPoints(pKiller, g_Config.m_SvPlayerScoreSpikeGreen, g_Config.m_SvTeamScoreSpikeGreen);
+			break;
+		case TILE_FNG_SPIKE_PURPLE:
+			if(IsStatTrack())
+				pKiller->m_Stats.m_PurpleSpikes++;
+			UpdateScoresAndDisplayPoints(pKiller, g_Config.m_SvPlayerScoreSpikePurple, g_Config.m_SvTeamScoreSpikePurple);
+			break;
+		case TILE_FNG_SPIKE_RED:
+			if(pKiller->GetTeam() == TEAM_RED || !IsTeamPlay()) UpdateScoresAndDisplayPoints(pKiller, g_Config.m_SvPlayerScoreSpikeTeam, g_Config.m_SvTeamScoreSpikeTeam);
+			else OnWrongSpike(pKiller);
+			break;
+		case TILE_FNG_SPIKE_BLUE:
+			if(pKiller->GetTeam() == TEAM_BLUE || !IsTeamPlay()) UpdateScoresAndDisplayPoints(pKiller, g_Config.m_SvPlayerScoreSpikeTeam, g_Config.m_SvTeamScoreSpikeTeam);
+			else OnWrongSpike(pKiller);
+			break;
+		default:
+			break;
+	}
+}
+
+inline void CGameControllerBaseFng::UpdateScoresAndDisplayPoints(CPlayer *pKiller, short playerScore, short teamScore){
+	pKiller->AddScore(playerScore-1);
+	AddTeamscore(pKiller->GetTeam(), teamScore);
+	GameServer()->MakeLaserTextPoints(pKiller->GetCharacter()->m_Pos, pKiller->GetCid(), playerScore);
 }
 
 void CGameControllerBaseFng::SnapDDNetCharacter(int SnappingClient, CCharacter *pChr, CNetObj_DDNetCharacter *pDDNetCharacter)
@@ -361,6 +354,8 @@ bool CGameControllerBaseFng::OnLaserHit(int Bounces, int From, int Weapon, CChar
 	// do not track wallshots on frozen tees
 	if(pVictim->m_FreezeTime)
 		return true;
+
+	if(pVictim->GetPlayer()->GetCid() != From) GameServer()->CreateSoundGlobal(SOUND_CTF_GRAB_PL, From);
 	return CGameControllerInstagib::OnLaserHit(Bounces, From, Weapon, pVictim);
 }
 

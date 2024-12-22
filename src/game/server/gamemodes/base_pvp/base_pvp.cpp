@@ -779,6 +779,12 @@ int CGameControllerPvp::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	if(GameServer()->GetDDRaceTeam(pVictim->GetPlayer()->GetCid()))
 		return 0;
 
+	if(pKiller->GetCid() != pVictim->GetPlayer()->GetCid()){
+		GameServer()->CreateSoundGlobal(SOUND_CTF_GRAB_PL, pVictim->GetPlayer()->GetCid());
+		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE, pKiller->GetCid());
+	}
+
+
 	if(pKiller == pVictim->GetPlayer())
 		pVictim->GetPlayer()->DecrementScore(); // suicide or world
 	else
@@ -912,6 +918,7 @@ void CGameControllerPvp::OnPlayerTick(class CPlayer *pPlayer)
 bool CGameControllerPvp::OnLaserHit(int Bounces, int From, int Weapon, CCharacter *pVictim)
 {
 	CPlayer *pPlayer = GameServer()->m_apPlayers[From];
+
 	if(!pPlayer)
 		return true;
 

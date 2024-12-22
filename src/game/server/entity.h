@@ -30,7 +30,6 @@ private:
 	CGameWorld *m_pGameWorld;
 	CCollision *m_pCCollision;
 
-	int m_Id;
 	int m_ObjType;
 
 	/*
@@ -42,6 +41,7 @@ private:
 protected:
 	/* State */
 	bool m_MarkedForDestroy;
+	int m_Id;
 
 public: // TODO: Maybe make protected
 	/*

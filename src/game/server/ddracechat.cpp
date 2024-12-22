@@ -21,16 +21,16 @@ void CGameContext::ConCreditsGctf(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-		"DDNet-insta written by ChillerDragon");
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-		"https://github.com/ddnet-insta/ddnet-insta/");
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-		"Thanks to AssassinTee, Cuube, Anime-pdf, M0REKZ");
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-		"JSaurusRex, jxsl13 and lukure");
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-		"based on ddnet see /credits_ddnet");
+	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+	// 	"DDNet-insta written by ChillerDragon");
+	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+	// 	"https://github.com/ddnet-insta/ddnet-insta/");
+	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+	// 	"Thanks to AssassinTee, Cuube, Anime-pdf, M0REKZ");
+	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+	// 	"JSaurusRex, jxsl13 and lukure");
+	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+	// 	"based on ddnet see /credits_ddnet");
 }
 
 void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)

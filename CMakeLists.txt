@@ -2724,6 +2724,8 @@ if(SERVER)
     entities/gun.h
     entities/laser.cpp
     entities/laser.h
+    laserText.cpp
+    laserText.h
     entities/light.cpp
     entities/light.h
     entities/pickup.cpp

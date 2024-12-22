@@ -111,6 +111,8 @@ public:
 			pEntity - Entity to add
 	*/
 	void InsertEntity(CEntity *pEntity);
+	void DestroyEntity(CEntity *pEnt);
+	
 
 	/*
 		Function: RemoveEntity

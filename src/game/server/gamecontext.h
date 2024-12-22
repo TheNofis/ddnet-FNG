@@ -247,6 +247,9 @@ public:
 
 	// helper functions
 	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount, CClientMask Mask = CClientMask().set());
+	void MakeLaserTextPoints(vec2 pPos, int pOwner, int pPoints);
+
+
 	// ddnet-insta added SprayMask to CreateExplosion
 	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int ActivatedTeam, CClientMask Mask = CClientMask().set(), CClientMask SprayMask = CClientMask().set());
 	void CreateHammerHit(vec2 Pos, CClientMask Mask = CClientMask().set());

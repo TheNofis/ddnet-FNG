@@ -33,6 +33,8 @@ public:
 	bool OnLaserHit(int Bounces, int From, int Weapon, CCharacter *pVictim) override;
 
 	void OnSpike(class CCharacter *pChr, int SpikeTile);
+	void OnSpikeHandled(CPlayer *pKiller, short SpikeTile);
+	inline void UpdateScoresAndDisplayPoints(CPlayer *pKiller, short playerScore, short teamScore);
 	void OnWrongSpike(class CPlayer *pPlayer);
 };
 #endif // GAME_SERVER_GAMEMODES_BASE_FNG_H
