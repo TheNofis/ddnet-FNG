@@ -239,18 +239,21 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientId)
 	return m_apPlayers[ClientId]->GetCharacter();
 }
 void CGameContext::MakeLaserTextPoints(vec2 pPos, int pOwner, int pPoints){
-	char text[10];
-	if(pPoints >= 0) str_format(text, 10, "+%d", pPoints);
-	else str_format(text, 10, "%d", pPoints);
+	char Text[10];
+	if(pPoints >= 0) str_format(Text, 10, "+%d", pPoints);
+	else str_format(Text, 10, "%d", pPoints);
 	pPos.y -= 20.0 * 2.5;
-	new CLaserText(&m_World, pPos, pOwner, Server()->TickSpeed() * 3, text, (int)(strlen(text)));
+	new CLaserText(&m_World, pPos, pOwner, Server()->TickSpeed() * 3, Text, (int)(strlen(Text)));
 }
 
-void CGameContext::MakeLaserText(vec2 pPos, int pOwner, const char* pText){
+void CGameContext::MakeLaserText(vec2 pPos, int pOwner, const char* pText) {
 	pPos.y -= 20.0 * 2.5;
-	char text[128];
-	str_format(text, 10, "%s", pText);
-	new CLaserText(&m_World, pPos, pOwner, Server()->TickSpeed() * 3, text, (int)(strlen(text)));
+	char Text[1280];
+
+	std::transform(pText, pText + strlen(pText), Text, [](unsigned char c) { return std::toupper(c); });
+	Text[strlen(pText)] = '\0';
+
+	new CLaserText(&m_World, pPos, pOwner, Server()->TickSpeed() * 3, Text, (int)(strlen(Text)));
 }
 
 bool CGameContext::EmulateBug(int Bug)
