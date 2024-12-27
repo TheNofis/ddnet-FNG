@@ -762,3 +762,6 @@ MACRO_CONFIG_INT(ClVideoRecorderFPS, cl_video_recorder_fps, 60, 1, 1000, CFGFLAG
 
 // ddnet-insta
 #include "variables_insta.h"
+
+
+MACRO_CONFIG_INT(SvAuthDisplay, sv_auth_display, 0, 0, 1, CFGFLAG_SERVER, "if 1, it will display in scoreboard that user is authorized otherwise it will not display (default 0)")

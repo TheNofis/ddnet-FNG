@@ -2,8 +2,6 @@
 #include <game/server/entities/character.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/player.h>
-#include <game/server/score.h>
-#include <game/version.h>
 
 #include <game/server/gamecontext.h>
 #include <string>
