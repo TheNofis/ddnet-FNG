@@ -5,7 +5,6 @@
 #include <engine/shared/protocolglue.h>
 #include <game/generated/protocol.h>
 #include <game/mapitems.h>
-#include <game/server/score.h>
 #include <game/teamscore.h>
 
 #include "gamecontext.h"

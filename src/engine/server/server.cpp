@@ -1762,8 +1762,8 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					if(!IsSixup(ClientId))
 					{
 						CMsgPacker Msgp(NETMSG_RCON_AUTH_STATUS, true);
-						Msgp.AddInt(1); //authed
-						Msgp.AddInt(1); //cmdlist
+						Msgp.AddInt(1); // authed
+						Msgp.AddInt(1); // cmdlist
 						SendMsg(&Msgp, MSGFLAG_VITAL, ClientId);
 					}
 					else
