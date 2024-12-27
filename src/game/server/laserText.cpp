@@ -79,7 +79,7 @@ static const bool asciiTable[256][5][3] = {
 	{ {1,1,1}, {1,0,0}, {1,1,1}, {1,0,0}, {1,0,0} }, // F
 	{ {1,1,1}, {1,0,1}, {1,1,1}, {0,0,1}, {0,1,1} }, // G
 	{ {1,0,1}, {1,0,1}, {1,1,1}, {1,0,1}, {1,0,1} }, // H
-	{ {1,0,0}, {1,0,0}, {1,0,0}, {1,0,0}, {1,0,0} }, // I
+	{ {1,1,1}, {0,1,0}, {0,1,0}, {0,1,0}, {1,1,1} }, // I
 	{ {0,0,1}, {0,0,1}, {1,0,1}, {1,0,1}, {1,1,1} }, // J
 	{ {1,0,0}, {1,0,0}, {1,0,1}, {1,1,0}, {1,0,1} }, // K
 	{ {1,0,0}, {1,0,0}, {1,0,0}, {1,0,0}, {1,1,1} }, // L
@@ -270,15 +270,15 @@ CLaserText::CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTi
 	m_Pos = Pos;
 	m_Owner = Owner;
 	GameWorld()->InsertEntity(this);
-	
+
 	m_CurTicks = Server()->Tick();
 	m_StartTick = Server()->Tick();
 	m_AliveTicks = pAliveTicks;
-	
+
 	m_TextLen = pTextLen;
 	m_Text = new char[pTextLen];
-	memcpy(m_Text, pText, pTextLen);	
-	
+	memcpy(m_Text, pText, pTextLen);
+
 	m_CharNum = 0;
 
 	for(int i = 0; i < m_TextLen; ++i){
@@ -290,12 +290,12 @@ CLaserText::CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTi
 			}
 		}
 	}
-	
+
 	m_Chars = new CLaserChar*[m_CharNum];
 
 	m_PosOffsetCharPoints = 15.0;
 	m_PosOffsetChars = m_PosOffsetCharPoints * 3.5;
-			
+
 	int charCount = 0;
 	for(int i = 0; i < m_TextLen; ++i){
 		makeLaser(m_Text[i], i, charCount);
@@ -308,15 +308,15 @@ CLaserText::CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTi
 	m_Pos = Pos;
 	m_Owner = Owner;
 	GameWorld()->InsertEntity(this);
-	
+
 	m_CurTicks = Server()->Tick();
 	m_StartTick = Server()->Tick();
 	m_AliveTicks = pAliveTicks;
-	
+
 	m_TextLen = pTextLen;
 	m_Text = new char[pTextLen];
-	memcpy(m_Text, pText, pTextLen);	
-	
+	memcpy(m_Text, pText, pTextLen);
+
 	m_CharNum = 0;
 
 	for(int i = 0; i < m_TextLen; ++i){
@@ -328,12 +328,12 @@ CLaserText::CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTi
 			}
 		}
 	}
-	
+
 	m_Chars = new CLaserChar*[m_CharNum];
 
 	m_PosOffsetCharPoints = pCharPointOffset;
 	m_PosOffsetChars = m_PosOffsetCharPoints * pCharOffsetFactor;
-			
+
 	int charCount = 0;
 	for(int i = 0; i < m_TextLen; ++i){
 		makeLaser(m_Text[i], i, charCount);
@@ -361,8 +361,8 @@ inline char NeighboursVert(const bool pCharVert[3], int pVertOff){
 	}
 	if(pVertOff < 2){
 		if(pCharVert[pVertOff + 1]) ++neighbours;
-	}	
-	
+	}
+
 	return neighbours;
 }
 
@@ -373,122 +373,84 @@ inline char NeighboursHor(const bool pCharHor[5][3], int pHorOff, int pVertOff){
 	}
 	if(pHorOff < 4){
 		if(pCharHor[pHorOff + 1][pVertOff]) ++neighbours;
-	}	
-	
+	}
+
 	return neighbours;
 }
 
-void CLaserText::makeLaser(char pChar, int pCharOffset, int& charCount){
-	unsigned short tail[5][3];
-	char neighbourCount[5][3];
-	
-	for(int n = 0; n < 5; ++n){
-		for(int j = 0; j < 3; ++j){
-			if(asciiTable[(unsigned char)pChar][n][j]){
-				neighbourCount[n][j] = 0;
-				neighbourCount[n][j] += NeighboursVert(asciiTable[(unsigned char)pChar][n], j);
-				neighbourCount[n][j] += NeighboursHor(asciiTable[(unsigned char)pChar], n, j);
-				tail[n][j] = 0;
-			} else tail[n][j] = (unsigned short)-1;
-		}
-	}
-	
-	for(int n = 0; n < 5; ++n){
-		for(int j = 0; j < 3; ++j){
-			if(asciiTable[(unsigned char)pChar][n][j]){
-				//additional x, y offset to draw a line
-				int x = j, y = n;
-				int maxNeighbour = 0;
-				//forced line draw
-				bool forceLine = false;
-				
-				if(j > 0){
-					if(asciiTable[(unsigned char)pChar][n][j - 1]){
-						if(tail[n][j - 1] != 0){
-							if(tail[n][j - 1] != (n << 8 | j)){
-								forceLine = true;
-								tail[n][j] = (n << 8 | (j - 1));
-								x = j - 1;
-								y = n;
-							}
-						} else if(neighbourCount[n][j - 1] > maxNeighbour){
-							maxNeighbour = neighbourCount[n][j - 1];
-							x = j - 1;
-							y = n;
-						}
-					}
-				}
-				if(!forceLine && j < 2){
-					if(asciiTable[(unsigned char)pChar][n][j + 1]){
-						if(tail[n][j + 1] != 0){
-							if(tail[n][j + 1] != (n << 8 | j)){
-								forceLine = true;
-								tail[n][j] = (n << 8 | (j + 1));
-								x = j + 1;
-								y = n;
-							}
-						} else if(neighbourCount[n][j + 1] > maxNeighbour){
-							maxNeighbour = neighbourCount[n][j + 1];
-							x = j + 1;
-							y = n;
-						}
-					}
-				}	
-				if(!forceLine && n > 0){
-					if(asciiTable[(unsigned char)pChar][n - 1][j]){
-						if(tail[n - 1][j] != 0){
-							if(tail[n - 1][j] != (n << 8 | j)){
-								forceLine = true;
-								tail[n][j] = ((n-1) << 8 | (j));
-								x = j;
-								y = n - 1;
-							}
-						} else if(neighbourCount[n - 1][j] > maxNeighbour){
-							maxNeighbour = neighbourCount[n - 1][j];
-							x = j;
-							y = n - 1;
-						}
-					}
-				}
-				if(!forceLine && n < 4){
-					if(asciiTable[(unsigned char)pChar][n + 1][j]){
-						if(tail[n + 1][j] != 0){
-							if(tail[n + 1][j] != (n << 8 | j)){
-								forceLine = true;
-								tail[n][j] = ((n+1) << 8 | (j));
-								x = j;
-								y = n + 1;
-							}
-						} else if(neighbourCount[n + 1][j] > maxNeighbour){
-							maxNeighbour = neighbourCount[n + 1][j];
-							x = j;
-							y = n + 1;
-						}
-					}
-				}	
-				
-				if(!forceLine){
-					tail[n][j] = (y << 8 | x);
-				}
-				
-				CLaserChar* pObj = (m_Chars[charCount] = new CLaserChar(GameWorld()));
+void CLaserText::makeLaser(char pChar, int pCharOffset, int& charCount) {
+    unsigned short tail[5][3];
+    char neighbourCount[5][3] = {0};
 
-				pObj->m_Pos.x = m_Pos.x + pCharOffset * m_PosOffsetChars + j * m_PosOffsetCharPoints;
-				pObj->m_Pos.y = m_Pos.y + n * m_PosOffsetCharPoints;
-				pObj->m_Frompos.x = m_Pos.x + pCharOffset * m_PosOffsetChars + x * m_PosOffsetCharPoints;
-				pObj->m_Frompos.y = m_Pos.y + y * m_PosOffsetCharPoints;
+    for (int n = 0; n < 5; ++n) {
+        for (int j = 0; j < 3; ++j) {
+            tail[n][j] = (asciiTable[(unsigned char)pChar][n][j]) ? 0 : (unsigned short)-1;
+            if (asciiTable[(unsigned char)pChar][n][j]) {
+                neighbourCount[n][j] += NeighboursVert(asciiTable[(unsigned char)pChar][n], j);
+                neighbourCount[n][j] += NeighboursHor(asciiTable[(unsigned char)pChar], n, j);
+            }
+        }
+    }
 
-				++charCount;
-			}	
-		}
-	}
+    for (int n = 0; n < 5; ++n) {
+        for (int j = 0; j < 3; ++j) {
+            if (!asciiTable[(unsigned char)pChar][n][j]) continue;
+
+            int x = j, y = n;
+            int maxNeighbour = 0;
+            bool forceLine = false;
+
+            for (int d = -1; d <= 1; d += 2) { //  d = -1 (left/up), d = 1 (right/down)
+                if (j + d >= 0 && j + d < 3) { // Horizontal neighbors
+                    if (asciiTable[(unsigned char)pChar][n][j + d]) {
+                        if (tail[n][j + d] != 0 && tail[n][j + d] != (n << 8 | (j + d))) {
+                            forceLine = true;
+                            tail[n][j] = (n << 8 | (j + d));
+                            x = j + d;
+                            y = n;
+                        } else if (neighbourCount[n][j + d] > maxNeighbour) {
+                            maxNeighbour = neighbourCount[n][j + d];
+                            x = j + d;
+                            y = n;
+                        }
+                    }
+                }
+                if (n + d >= 0 && n + d < 5) {
+                    if (asciiTable[(unsigned char)pChar][n + d][j]) {
+                        if (tail[n + d][j] != 0 && tail[n + d][j] != ((n + d) << 8 | j)) {
+                            forceLine = true;
+                            tail[n][j] = ((n + d) << 8 | j);
+                            x = j;
+                            y = n + d;
+                        } else if (neighbourCount[n + d][j] > maxNeighbour) {
+                            maxNeighbour = neighbourCount[n + d][j];
+                            x = j;
+                            y = n + d;
+                        }
+                    }
+                }
+            }
+
+            if (!forceLine) {
+                tail[n][j] = (y << 8 | x);
+            }
+
+            CLaserChar* pObj = (m_Chars[charCount] = new CLaserChar(GameWorld()));
+            pObj->m_Pos.x = m_Pos.x + pCharOffset * m_PosOffsetChars + j * m_PosOffsetCharPoints;
+            pObj->m_Pos.y = m_Pos.y + n * m_PosOffsetCharPoints;
+            pObj->m_Frompos.x = m_Pos.x + pCharOffset * m_PosOffsetChars + x * m_PosOffsetCharPoints;
+            pObj->m_Frompos.y = m_Pos.y + y * m_PosOffsetCharPoints;
+
+            ++charCount;
+        }
+    }
 }
 
 void CLaserText::Snap(int SnappingClient)
 {
 	if(NetworkClipped(SnappingClient))
 		return;
-	
+
 	for(int i = 0; i < m_CharNum; ++i){
 		CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(NETOBJTYPE_LASER, m_Chars[i]->getID(), sizeof(CNetObj_Laser)));
 		if(!pObj)
@@ -498,7 +460,6 @@ void CLaserText::Snap(int SnappingClient)
 		pObj->m_Y = m_Chars[i]->m_Pos.y;
 		pObj->m_FromX = m_Chars[i]->m_Frompos.x;
 		pObj->m_FromY = m_Chars[i]->m_Frompos.y;
-		pObj->m_StartTick = Server()->Tick();		
+		pObj->m_StartTick = Server()->Tick();
 	}
 }
-
