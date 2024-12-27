@@ -918,9 +918,11 @@ void CGameControllerPvp::OnPlayerTick(class CPlayer *pPlayer)
 bool CGameControllerPvp::OnLaserHit(int Bounces, int From, int Weapon, CCharacter *pVictim)
 {
 	CPlayer *pPlayer = GameServer()->m_apPlayers[From];
+	CPlayer *Cplayer = pVictim->GetPlayer();
 
-	if(!pPlayer)
-		return true;
+	if(Cplayer->GetCid() != From && pPlayer->GetTeam() != Cplayer->GetTeam()) GameServer()->CreateSoundGlobal(SOUND_CTF_GRAB_PL, From);
+
+	if(!pPlayer) return true;
 
 	if(IsStatTrack() && Bounces != 0)
 		pPlayer->m_Stats.m_Wallshots++;

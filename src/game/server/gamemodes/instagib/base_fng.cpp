@@ -358,7 +358,6 @@ bool CGameControllerBaseFng::OnLaserHit(int Bounces, int From, int Weapon, CChar
 	if(pVictim->m_FreezeTime)
 		return true;
 
-	if(pVictim->GetPlayer()->GetCid() != From) GameServer()->CreateSoundGlobal(SOUND_CTF_GRAB_PL, From);
 	return CGameControllerInstagib::OnLaserHit(Bounces, From, Weapon, pVictim);
 }
 
