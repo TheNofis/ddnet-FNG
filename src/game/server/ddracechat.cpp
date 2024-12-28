@@ -17,12 +17,12 @@
 
 bool CheckClientId(int ClientId);
 
-void CGameContext::ConCreditsGctf(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConCreditsGctf(IConsole::IResult *_, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
-	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-	// 	"DDNet-insta written by ChillerDragon");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+		"DDNet-insta written by ChillerDragon");
 	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 	// 	"https://github.com/ddnet-insta/ddnet-insta/");
 	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
@@ -33,7 +33,7 @@ void CGameContext::ConCreditsGctf(IConsole::IResult *pResult, void *pUserData)
 	// 	"based on ddnet see /credits_ddnet");
 }
 
-void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConCredits(IConsole::IResult *_, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
@@ -88,8 +88,8 @@ void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 		"DDNet-insta " DDNET_INSTA_VERSIONSTR " by ChillerDragon");
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-		"https://github.com/ddnet-insta/ddnet-insta/");
+	// pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+	//	"https://github.com/ddnet-insta/ddnet-insta/");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 		"built on: " DDNET_INSTA_BUILD_DATE);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
@@ -1059,13 +1059,13 @@ void CGameContext::AttemptJoinTeam(int ClientId, int Team)
 			"You are running a vote please try again after the vote is done!");
 		return;
 	}
-	else if(g_Config.m_SvTeam == SV_TEAM_FORBIDDEN || g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
+	if(g_Config.m_SvTeam == SV_TEAM_FORBIDDEN || g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
 	{
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 			"Teams are disabled");
 		return;
 	}
-	else if(g_Config.m_SvTeam == SV_TEAM_MANDATORY && Team == 0 && pPlayer->GetCharacter() && pPlayer->GetCharacter()->m_LastStartWarning < Server()->Tick() - 3 * Server()->TickSpeed())
+	if(g_Config.m_SvTeam == SV_TEAM_MANDATORY && Team == 0 && pPlayer->GetCharacter() && pPlayer->GetCharacter()->m_LastStartWarning < Server()->Tick() - 3 * Server()->TickSpeed())
 	{
 		Console()->Print(
 			IConsole::OUTPUT_LEVEL_STANDARD,
@@ -1114,9 +1114,11 @@ void CGameContext::AttemptJoinTeam(int ClientId, int Team)
 				Team);
 			SendChat(-1, TEAM_ALL, aBuf);
 			pPlayer->m_Last_Team = Server()->Tick();
+			if (g_Config.m_TrainFngMode) m_pController->Teams().SetPractice(Team, true);
 
 			if(m_pController->Teams().IsPractice(Team))
 				SendChatTarget(pPlayer->GetCid(), "Practice mode enabled for your team, happy practicing!");
+
 
 			if(m_pController->Teams().TeamFlock(Team))
 				SendChatTarget(pPlayer->GetCid(), "Team 0 mode enabled for your team. This will make your team behave like team 0.");

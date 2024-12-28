@@ -765,3 +765,5 @@ MACRO_CONFIG_INT(ClVideoRecorderFPS, cl_video_recorder_fps, 60, 1, 1000, CFGFLAG
 
 
 MACRO_CONFIG_INT(SvAuthDisplay, sv_auth_display, 0, 0, 1, CFGFLAG_SERVER, "if 1, it will display in scoreboard that user is authorized otherwise it will not display (default 0)")
+MACRO_CONFIG_INT(RetractPointsOnDeath, retract_points_on_death, 1, 0, 100, CFGFLAG_SERVER, "number of points that will be destroyed after death (0 disable)")
+MACRO_CONFIG_INT(TrainFngMode, trainfng_mode, 0, 0, 1, CFGFLAG_SERVER, "trainfng mode (1 enable)")

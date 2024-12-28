@@ -8,14 +8,12 @@
 #include <game/server/entities/flag.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/instagib/sql_stats.h>
-#include <game/server/instagib/version.h>
 #include <game/server/player.h>
 #include <game/server/score.h>
-#include <game/version.h>
 
 #include "base_pvp.h"
 
-CGameControllerPvp::CGameControllerPvp(class CGameContext *pGameServer) :
+CGameControllerPvp::CGameControllerPvp(CGameContext *pGameServer) :
 	CGameControllerDDRace(pGameServer)
 {
 	m_GameFlags = GAMEFLAG_TEAMS | GAMEFLAG_FLAGS;
@@ -920,7 +918,8 @@ bool CGameControllerPvp::OnLaserHit(int Bounces, int From, int Weapon, CCharacte
 	CPlayer *pPlayer = GameServer()->m_apPlayers[From];
 	CPlayer *VPlayer = pVictim->GetPlayer();
 
-	if(VPlayer->GetCid() != From && VPlayer->GetTeam() == 0 || pPlayer->GetTeam() != VPlayer->GetTeam())
+	GameServer()->CreateDeath(pVictim->m_Pos, VPlayer->GetCid(), pVictim->TeamMask()); // effect
+	if((VPlayer->GetCid() != From && VPlayer->GetTeam() == 0) || pPlayer->GetTeam() != VPlayer->GetTeam())
 	{
 		GameServer()->CreateSoundGlobal(SOUND_HIT, From);
 		GameServer()->CreateSoundGlobal(SOUND_PLAYER_PAIN_SHORT, VPlayer->GetCid());
@@ -1209,9 +1208,6 @@ void CGameControllerPvp::OnPlayerConnect(CPlayer *pPlayer)
 			GameServer()->SendChat(-1, TEAM_ALL, aBuf, -1, CGameContext::FLAG_SIX);
 		else if(g_Config.m_SvTournamentJoinMsgs == 2)
 			SendChatSpectators(aBuf, CGameContext::FLAG_SIX);
-
-		GameServer()->SendChatTarget(ClientId, "DDNet-insta " DDNET_INSTA_VERSIONSTR " https://github.com/ddnet-insta/ddnet-insta/");
-		GameServer()->SendChatTarget(ClientId, "DDraceNetwork Mod. Version: " GAME_VERSION);
 
 		GameServer()->AlertOnSpecialInstagibConfigs(ClientId);
 		GameServer()->ShowCurrentInstagibConfigsMotd(ClientId);
