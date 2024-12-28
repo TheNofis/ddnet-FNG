@@ -334,9 +334,9 @@ CLaserText::CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTi
 	m_PosOffsetCharPoints = pCharPointOffset;
 	m_PosOffsetChars = m_PosOffsetCharPoints * pCharOffsetFactor;
 
-	int charCount = 0;
+	int CharCount = 0;
 	for(int i = 0; i < m_TextLen; ++i){
-		makeLaser(m_Text[i], i, charCount);
+		makeLaser(m_Text[i], i, CharCount);
 	}
 }
 
@@ -354,40 +354,40 @@ void CLaserText::TickPaused()
 {
 }
 
-inline char NeighboursVert(const bool pCharVert[3], int pVertOff){
-	char neighbours = 0;
+inline static char NeighboursVert(const bool pCharVert[3], int pVertOff){
+	char Neighbours = 0;
 	if(pVertOff > 0){
-		if(pCharVert[pVertOff - 1]) ++neighbours;
+		if(pCharVert[pVertOff - 1]) ++Neighbours;
 	}
 	if(pVertOff < 2){
-		if(pCharVert[pVertOff + 1]) ++neighbours;
+		if(pCharVert[pVertOff + 1]) ++Neighbours;
 	}
 
-	return neighbours;
+	return Neighbours;
 }
 
-inline char NeighboursHor(const bool pCharHor[5][3], int pHorOff, int pVertOff){
-	char neighbours = 0;
+inline static char NeighboursHor(const bool pCharHor[5][3], int pHorOff, int pVertOff){
+	char Neighbours = 0;
 	if(pHorOff > 0){
-		if(pCharHor[pHorOff - 1][pVertOff]) ++neighbours;
+		if(pCharHor[pHorOff - 1][pVertOff]) ++Neighbours;
 	}
 	if(pHorOff < 4){
-		if(pCharHor[pHorOff + 1][pVertOff]) ++neighbours;
+		if(pCharHor[pHorOff + 1][pVertOff]) ++Neighbours;
 	}
 
-	return neighbours;
+	return Neighbours;
 }
 
-void CLaserText::makeLaser(char pChar, int pCharOffset, int& charCount) {
-    unsigned short tail[5][3];
-    char neighbourCount[5][3] = {0};
+void CLaserText::makeLaser(char pChar, int pCharOffset, int& CharCount) {
+    unsigned short Tail[5][3];
+    char NeighbourCount[5][3] = {0};
 
     for (int n = 0; n < 5; ++n) {
         for (int j = 0; j < 3; ++j) {
-            tail[n][j] = (asciiTable[(unsigned char)pChar][n][j]) ? 0 : (unsigned short)-1;
+            Tail[n][j] = (asciiTable[(unsigned char)pChar][n][j]) ? 0 : (unsigned short)-1;
             if (asciiTable[(unsigned char)pChar][n][j]) {
-                neighbourCount[n][j] += NeighboursVert(asciiTable[(unsigned char)pChar][n], j);
-                neighbourCount[n][j] += NeighboursHor(asciiTable[(unsigned char)pChar], n, j);
+                NeighbourCount[n][j] += NeighboursVert(asciiTable[(unsigned char)pChar][n], j);
+                NeighbourCount[n][j] += NeighboursHor(asciiTable[(unsigned char)pChar], n, j);
             }
         }
     }
@@ -397,19 +397,19 @@ void CLaserText::makeLaser(char pChar, int pCharOffset, int& charCount) {
             if (!asciiTable[(unsigned char)pChar][n][j]) continue;
 
             int x = j, y = n;
-            int maxNeighbour = 0;
-            bool forceLine = false;
+            int MaxNeighbour = 0;
+            bool ForceLine = false;
 
             for (int d = -1; d <= 1; d += 2) { //  d = -1 (left/up), d = 1 (right/down)
                 if (j + d >= 0 && j + d < 3) { // Horizontal neighbors
                     if (asciiTable[(unsigned char)pChar][n][j + d]) {
-                        if (tail[n][j + d] != 0 && tail[n][j + d] != (n << 8 | (j + d))) {
-                            forceLine = true;
-                            tail[n][j] = (n << 8 | (j + d));
+                        if (Tail[n][j + d] != 0 && Tail[n][j + d] != (n << 8 | (j + d))) {
+                            ForceLine = true;
+                            Tail[n][j] = (n << 8 | (j + d));
                             x = j + d;
                             y = n;
-                        } else if (neighbourCount[n][j + d] > maxNeighbour) {
-                            maxNeighbour = neighbourCount[n][j + d];
+                        } else if (NeighbourCount[n][j + d] > MaxNeighbour) {
+                            MaxNeighbour = NeighbourCount[n][j + d];
                             x = j + d;
                             y = n;
                         }
@@ -417,13 +417,13 @@ void CLaserText::makeLaser(char pChar, int pCharOffset, int& charCount) {
                 }
                 if (n + d >= 0 && n + d < 5) {
                     if (asciiTable[(unsigned char)pChar][n + d][j]) {
-                        if (tail[n + d][j] != 0 && tail[n + d][j] != ((n + d) << 8 | j)) {
-                            forceLine = true;
-                            tail[n][j] = ((n + d) << 8 | j);
+                        if (Tail[n + d][j] != 0 && Tail[n + d][j] != ((n + d) << 8 | j)) {
+                            ForceLine = true;
+                            Tail[n][j] = ((n + d) << 8 | j);
                             x = j;
                             y = n + d;
-                        } else if (neighbourCount[n + d][j] > maxNeighbour) {
-                            maxNeighbour = neighbourCount[n + d][j];
+                        } else if (NeighbourCount[n + d][j] > MaxNeighbour) {
+                            MaxNeighbour = NeighbourCount[n + d][j];
                             x = j;
                             y = n + d;
                         }
@@ -431,17 +431,17 @@ void CLaserText::makeLaser(char pChar, int pCharOffset, int& charCount) {
                 }
             }
 
-            if (!forceLine) {
-                tail[n][j] = (y << 8 | x);
+            if (!ForceLine) {
+                Tail[n][j] = (y << 8 | x);
             }
 
-            CLaserChar* pObj = (m_Chars[charCount] = new CLaserChar(GameWorld()));
+            CLaserChar* pObj = (m_Chars[CharCount] = new CLaserChar(GameWorld()));
             pObj->m_Pos.x = m_Pos.x + pCharOffset * m_PosOffsetChars + j * m_PosOffsetCharPoints;
             pObj->m_Pos.y = m_Pos.y + n * m_PosOffsetCharPoints;
             pObj->m_Frompos.x = m_Pos.x + pCharOffset * m_PosOffsetChars + x * m_PosOffsetCharPoints;
             pObj->m_Frompos.y = m_Pos.y + y * m_PosOffsetCharPoints;
 
-            ++charCount;
+            ++CharCount;
         }
     }
 }

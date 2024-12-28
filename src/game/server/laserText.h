@@ -7,9 +7,7 @@
 
 class CLaserChar : public CEntity {
 public:
-	CLaserChar(CGameWorld *pGameWorld) : CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER) {
-	}
-public:
+	CLaserChar(CGameWorld *pGameWorld) : CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER) {}
 	int getID() { return m_Id; }
 	vec2 m_Frompos;
 };
@@ -19,24 +17,24 @@ class CLaserText : public CEntity
 public:
 	CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTicks, char* pText, int pTextLen);
 	CLaserText(CGameWorld *pGameWorld, vec2 Pos, int Owner, int pAliveTicks, char* pText, int pTextLen, float pCharPointOffset, float pCharOffsetFactor);
-	virtual ~CLaserText(){ 
+	~CLaserText() override{
 		delete[] m_Text; 
 		for(int i = 0; i < m_CharNum; ++i) {
-			delete (CLaserChar*)m_Chars[i];
+			delete m_Chars[i];
 		}
 		delete[] m_Chars;
 	}
 
-	virtual void Reset();
-	virtual void Tick();
-	virtual void TickPaused();
-	virtual void Snap(int SnappingClient);
+	void Reset() override;
+	void Tick() override;
+	void TickPaused() override;
+	void Snap(int SnappingClient) override;
 
 private:
 	float m_PosOffsetCharPoints;
 	float m_PosOffsetChars;
 
-	void makeLaser(char pChar, int pCharOffset, int& charCount);
+	void makeLaser(char pChar, int pCharOffset, int& CharCount);
 
 	int m_Owner;
 	

@@ -38,7 +38,6 @@ class CPlayer
 #define IN_CLASS_PLAYER
 #include <game/server/gamemodes/base_pvp/player.h>
 
-public:
 	CPlayer(CGameContext *pGameServer, uint32_t UniqueClientId, int ClientId, int Team);
 	~CPlayer();
 

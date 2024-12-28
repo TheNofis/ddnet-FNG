@@ -6,6 +6,8 @@
 #include <game/server/gamecontext.h>
 #include <string>
 
+bool CheckClientId(int ClientId);
+
 void CGameContext::ConHammer(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -155,4 +157,31 @@ void CGameContext::ConRandomMapFromPool(IConsole::IResult *pResult, void *pUserD
 	const char *pMap = pSelf->Server()->GetRandomMapFromPool();
 	if(pMap && pMap[0])
 		pSelf->m_pController->ChangeMap(pMap);
+}
+
+void CGameContext::ConCreateSound(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientId = clamp(pResult->GetInteger(0), -1, (int)MAX_CLIENTS - 1);
+	int Sound = clamp(pResult->GetInteger(1), 1, 41);
+
+	if(!pSelf->m_apPlayers[ClientId])
+		return;
+
+	// pSelf->CreateSound()
+	pSelf->CreateSoundGlobal(Sound, ClientId);
+}
+
+void CGameContext::ConLaserText(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	int ClientId = pResult->m_ClientId;
+	if(!CheckClientId(ClientId))
+		return;
+
+	const vec2 PPos = pSelf->m_apPlayers[ClientId]->GetCharacter()->GetPos();
+
+	pSelf->MakeLaserText(PPos, ClientId, pResult->GetString(0));
+
 }

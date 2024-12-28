@@ -110,20 +110,6 @@ void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
 		"Or visit DDNet.org");
 }
 
-void CGameContext::ConLaserText(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-
-	int ClientId = pResult->m_ClientId;
-	if(!CheckClientId(ClientId))
-		return;
-
-	const vec2 PPos = pSelf->m_apPlayers[ClientId]->GetCharacter()->GetPos();
-
-	pSelf->MakeLaserText(PPos, ClientId, pResult->GetString(0));
-	
-}
-
 void CGameContext::ConList(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;

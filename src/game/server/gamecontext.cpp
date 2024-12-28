@@ -3851,7 +3851,7 @@ void CGameContext::RegisterDDRaceCommands()
 	Console()->Register("freezehammer", "v[id]", CFGFLAG_SERVER | CMDFLAG_TEST, ConFreezeHammer, this, "Gives a player Freeze Hammer");
 	Console()->Register("unfreezehammer", "v[id]", CFGFLAG_SERVER | CMDFLAG_TEST, ConUnFreezeHammer, this, "Removes Freeze Hammer from a player");
 
-	Console()->Register("laser_text", "r[message]", CFGFLAG_SERVER, ConLaserText, this, "Write text on the laser");
+
 }
 
 void CGameContext::RegisterChatCommands()
