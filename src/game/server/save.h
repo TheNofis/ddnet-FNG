@@ -36,6 +36,7 @@ public:
 	CSaveTee();
 	~CSaveTee() = default;
 	void Save(CCharacter *pchr, bool AddPenalty = true);
+	void Reset(CCharacter *pChr);
 	bool Load(CCharacter *pchr, int Team, bool IsSwap = false);
 	char *GetString(const CSaveTeam *pTeam);
 	int FromString(const char *pString);

@@ -4,8 +4,6 @@
 #include <game/server/entities/character.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/player.h>
-#include <game/server/score.h>
-#include <game/version.h>
 
 #include <game/server/gamecontext.h>
 
@@ -404,6 +402,28 @@ void CGameContext::ConRankFlagCaptures(IConsole::IResult *pResult, void *pUserDa
 
 	const char *pName = pResult->NumArguments() ? pResult->GetString(0) : pSelf->Server()->ClientName(pResult->m_ClientId);
 	pSelf->m_pController->m_pSqlStats->ShowRank(pResult->m_ClientId, pName, "Flag captures", "flag_captures", pSelf->m_pController->StatsTable(), "DESC");
+}
+
+void CGameContext::ConSpawnSetCurrentPosition(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter *pChr = pSelf->GetPracticeCharacter(pResult);
+	if(pChr)
+	{
+		pChr->GetPlayer()->m_LastTeleTee.Save(pChr);
+		pSelf->SendChatTarget(pChr->GetPlayer()->GetCid(), "Spawn position updated");
+	}
+}
+
+void CGameContext::ConSpawnReset(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter *pChr = pSelf->GetPracticeCharacter(pResult);
+	if(pChr)
+	{
+		pChr->GetPlayer()->m_LastTeleTee.Reset(pChr);
+		pSelf->SendChatTarget(pChr->GetPlayer()->GetCid(), "Spawn position updated");
+	}
 }
 
 #define MACRO_ADD_COLUMN(name, sql_name, sql_type, bind_type, default, merge_method) ;

@@ -19,5 +19,6 @@ CONSOLE_COMMAND("swap_teams_random", "", CFGFLAG_SERVER, ConSwapTeamsRandom, thi
 CONSOLE_COMMAND("add_map_to_pool", "s[map name]", CFGFLAG_SERVER, ConAddMapToPool, this, "Can be picked by random_map_from_pool command (entries can be duplicated to increase chance)")
 CONSOLE_COMMAND("clear_map_pool", "", CFGFLAG_SERVER, ConClearMapPool, this, "Clears pool used by random_map_from_pool command")
 CONSOLE_COMMAND("random_map_from_pool", "", CFGFLAG_SERVER, ConRandomMapFromPool, this, "Changes to random map from pool (see add_map_to_pool)")
-
+CONSOLE_COMMAND("create_sound", "i[id] i[sound]", CFGFLAG_SERVER, ConCreateSound, this, "Create sound in user")
+CONSOLE_COMMAND("laser_text", "r[message]", CFGFLAG_SERVER, ConLaserText, this, "Write text on the laser");
 #undef CONSOLE_COMMAND

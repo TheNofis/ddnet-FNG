@@ -30,7 +30,6 @@ class CCharacter : public CEntity
 
 	friend class CSaveTee; // need to use core
 
-public:
 	CCharacter(CGameWorld *pWorld, CNetObj_PlayerInput LastInput);
 
 	void Reset() override;

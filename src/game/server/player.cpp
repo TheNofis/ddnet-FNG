@@ -431,7 +431,7 @@ void CPlayer::Snap(int SnappingClient)
 	if(!pDDNetPlayer)
 		return;
 
-	pDDNetPlayer->m_AuthLevel = Server()->GetAuthedState(m_ClientId);
+	if (g_Config.m_SvAuthDisplay)  pDDNetPlayer->m_AuthLevel = Server()->GetAuthedState(m_ClientId);
 	pDDNetPlayer->m_Flags = 0;
 	if(m_Afk)
 		pDDNetPlayer->m_Flags |= EXPLAYERFLAG_AFK;
@@ -720,15 +720,23 @@ void CPlayer::TryRespawn()
 {
 	vec2 SpawnPos;
 
-	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, GameServer()->GetDDRaceTeam(m_ClientId)))
+	int Team = GameServer()->GetDDRaceTeam(m_ClientId);
+	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, Team))
 		return;
+
+	CPlayer *pPlayer = GameServer()->m_apPlayers[m_ClientId];
 
 	m_WeakHookSpawn = false;
 	m_Spawning = false;
 	m_pCharacter = new(m_ClientId) CCharacter(&GameServer()->m_World, GameServer()->GetLastPlayerInput(m_ClientId));
 	m_ViewPos = SpawnPos;
 	m_pCharacter->Spawn(this, SpawnPos);
-	GameServer()->CreatePlayerSpawn(SpawnPos, GameServer()->m_pController->GetMaskForPlayerWorldEvent(m_ClientId));
+	if(g_Config.m_TrainFngMode && Team != 0 && pPlayer != nullptr && m_pCharacter != nullptr && pPlayer->m_LastTeleTee.GetPos().x)
+	{
+		pPlayer->m_LastTeleTee.Load(m_pCharacter, Team, true);
+		return;
+	}
+	if (!g_Config.m_TrainFngMode) GameServer()->CreatePlayerSpawn(SpawnPos, GameServer()->m_pController->GetMaskForPlayerWorldEvent(m_ClientId));
 
 	if(g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
 		m_pCharacter->SetSolo(true);
@@ -836,7 +844,7 @@ int CPlayer::Pause(int State, bool Force)
 				}
 				m_pCharacter->Pause(false);
 				m_ViewPos = m_pCharacter->m_Pos;
-				GameServer()->CreatePlayerSpawn(m_pCharacter->m_Pos, GameServer()->m_pController->GetMaskForPlayerWorldEvent(m_ClientId));
+				if (!g_Config.m_TrainFngMode) GameServer()->CreatePlayerSpawn(m_pCharacter->m_Pos, GameServer()->m_pController->GetMaskForPlayerWorldEvent(m_ClientId));
 			}
 			[[fallthrough]];
 		case PAUSE_SPEC:

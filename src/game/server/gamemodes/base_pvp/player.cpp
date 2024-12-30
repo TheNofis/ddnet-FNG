@@ -7,7 +7,6 @@
 #include <game/server/instagib/sql_stats.h>
 #include <game/server/player.h>
 #include <game/server/score.h>
-#include <game/version.h>
 
 void CPlayer::ResetStats()
 {
@@ -87,6 +86,56 @@ void CPlayer::InstagibTick()
 		ProcessStatsResult(*m_FastcapQueryResult);
 		m_FastcapQueryResult = nullptr;
 	}
+	if(!GameServer()->m_World.m_Paused)
+	{
+		if(!m_pCharacter)
+			m_Spawning = true;
+
+		if(m_pCharacter)
+		{
+			if(m_pCharacter->IsAlive())
+			{
+				ProcessPause();
+				if(!m_Paused)
+					m_ViewPos = m_pCharacter->m_Pos;
+			}
+			else if(!m_pCharacter->IsPaused())
+			{
+				delete m_pCharacter;
+				m_pCharacter = 0;
+			}
+		}
+		else if(m_Spawning && !m_WeakHookSpawn)
+			TryRespawn();
+	}
+	else
+	{
+		++m_JoinTick;
+		++m_LastActionTick;
+		++m_TeamChangeTick;
+	}
+
+	m_TuneZoneOld = m_TuneZone; // determine needed tunings with viewpos
+	int CurrentIndex = GameServer()->Collision()->GetMapIndex(m_ViewPos);
+	m_TuneZone = GameServer()->Collision()->IsTune(CurrentIndex);
+
+	if(m_TuneZone != m_TuneZoneOld) // don't send tunings all the time
+	{
+		GameServer()->SendTuningParams(m_ClientId, m_TuneZone);
+	}
+
+	if(m_OverrideEmoteReset >= 0 && m_OverrideEmoteReset <= Server()->Tick())
+	{
+		m_OverrideEmoteReset = -1;
+	}
+
+	if(m_Halloween && m_pCharacter && !m_pCharacter->IsPaused())
+	{
+		if(1200 - ((Server()->Tick() - m_pCharacter->GetLastAction()) % (1200)) < 5)
+		{
+			GameServer()->SendEmoticon(GetCid(), EMOTICON_GHOST, GetCid());
+		}
+	}
 }
 
 void CPlayer::ProcessStatsResult(CInstaSqlResult &Result)
@@ -153,10 +202,14 @@ int64_t CPlayer::HandleMulti()
 		m_Stats.m_BestMulti = m_Multi;
 	int Index = m_Multi - 2;
 	m_Stats.m_aMultis[Index > MAX_MULTIS ? MAX_MULTIS : Index]++;
-	char aBuf[128];
-	str_format(aBuf, sizeof(aBuf), "'%s' multi x%d!",
-		Server()->ClientName(GetCid()), m_Multi);
-	GameServer()->SendChat(-1, TEAM_ALL, aBuf);
+
+	if (!g_Config.m_TrainFngMode)
+	{
+		char aBuf[128];
+		str_format(aBuf, sizeof(aBuf), "'%s' multi x%d!",
+			Server()->ClientName(GetCid()), m_Multi);
+		GameServer()->SendChat(-1, TEAM_ALL, aBuf);
+	}
 	return TimeNow;
 }
 

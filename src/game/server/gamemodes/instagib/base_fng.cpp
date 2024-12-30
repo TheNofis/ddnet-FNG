@@ -11,8 +11,6 @@
 #include <game/server/gamecontext.h>
 #include <game/server/gamemodes/instagib/base_instagib.h>
 #include <game/server/player.h>
-#include <game/server/score.h>
-#include <game/version.h>
 
 #include "base_fng.h"
 
@@ -194,6 +192,7 @@ void CGameControllerBaseFng::OnWrongSpike(class CPlayer *pPlayer)
 
 void CGameControllerBaseFng::OnSpike(class CCharacter *pChr, int SpikeTile)
 {
+	if(pChr->IsSuper() || pChr->m_IsGodmode) return;
 	if(!pChr->m_FreezeTime)
 	{
 		pChr->Die(pChr->GetPlayer()->GetCid(), WEAPON_WORLD);
@@ -209,6 +208,7 @@ void CGameControllerBaseFng::OnSpike(class CCharacter *pChr, int SpikeTile)
 	{
 
 		// Give score and render text laser
+		CCharacter *pChr = pKiller->GetCharacter();
 		OnSpikeHandled(pKiller, SpikeTile);
 
 
@@ -246,8 +246,6 @@ void CGameControllerBaseFng::OnSpike(class CCharacter *pChr, int SpikeTile)
 }
 
 void CGameControllerBaseFng::OnSpikeHandled(CPlayer *pKiller, short SpikeTile){
-	// all scores are +1
-	// from the kill it self
 
 	switch (SpikeTile)
 	{
@@ -323,13 +321,11 @@ CClientMask CGameControllerBaseFng::FreezeDamageIndicatorMask(class CCharacter *
 bool CGameControllerBaseFng::OnSelfkill(int ClientId)
 {
 	CPlayer *pPlayer = GameServer()->m_apPlayers[ClientId];
-	if(!pPlayer)
-		return false;
+	if(!pPlayer) return false;
 	CCharacter *pChr = pPlayer->GetCharacter();
-	if(!pChr)
-		return false;
-	if(!pChr->m_FreezeTime)
-		return false;
+	if(!pChr || !pChr->m_FreezeTime) return false;
+
+	if (g_Config.m_TrainFngMode) return false;
 
 	GameServer()->SendChatTarget(ClientId, "You can't kill while being frozen");
 	return true;
@@ -358,7 +354,6 @@ bool CGameControllerBaseFng::OnLaserHit(int Bounces, int From, int Weapon, CChar
 	if(pVictim->m_FreezeTime)
 		return true;
 
-	if(pVictim->GetPlayer()->GetCid() != From) GameServer()->CreateSoundGlobal(SOUND_CTF_GRAB_PL, From);
 	return CGameControllerInstagib::OnLaserHit(Bounces, From, Weapon, pVictim);
 }
 

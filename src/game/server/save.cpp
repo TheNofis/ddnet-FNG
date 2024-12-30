@@ -63,13 +63,13 @@ void CSaveTee::Save(CCharacter *pChr, bool AddPenalty)
 
 	m_HitDisabledFlags = 0;
 	if(pChr->m_Core.m_HammerHitDisabled)
-		m_HitDisabledFlags |= CSaveTee::HAMMER_HIT_DISABLED;
+		m_HitDisabledFlags |= HAMMER_HIT_DISABLED;
 	if(pChr->m_Core.m_ShotgunHitDisabled)
-		m_HitDisabledFlags |= CSaveTee::SHOTGUN_HIT_DISABLED;
+		m_HitDisabledFlags |= SHOTGUN_HIT_DISABLED;
 	if(pChr->m_Core.m_GrenadeHitDisabled)
-		m_HitDisabledFlags |= CSaveTee::GRENADE_HIT_DISABLED;
+		m_HitDisabledFlags |= GRENADE_HIT_DISABLED;
 	if(pChr->m_Core.m_LaserHitDisabled)
-		m_HitDisabledFlags |= CSaveTee::LASER_HIT_DISABLED;
+		m_HitDisabledFlags |= LASER_HIT_DISABLED;
 
 	m_TuneZone = pChr->m_TuneZone;
 	m_TuneZoneOld = pChr->m_TuneZoneOld;
@@ -131,6 +131,92 @@ void CSaveTee::Save(CCharacter *pChr, bool AddPenalty)
 	FormatUuid(pChr->GameServer()->GameUuid(), m_aGameUuid, sizeof(m_aGameUuid));
 }
 
+void CSaveTee::Reset(CCharacter *pChr)
+{
+	m_Alive = bool();
+
+	m_TeeStarted = int();
+	m_TeeFinished = int();
+	m_IsSolo = int();
+
+	for(int i = 0; i < NUM_WEAPONS; i++)
+	{
+		m_aWeapons[i].m_AmmoRegenStart = int();
+		m_aWeapons[i].m_Ammo = int();
+		m_aWeapons[i].m_Ammocost = int();
+		m_aWeapons[i].m_Got = int();
+	}
+
+	m_Ninja.m_ActivationDir = vec2();
+	m_Ninja.m_ActivationTick = 0;
+	m_Ninja.m_CurrentMoveTime = int();
+	m_Ninja.m_OldVelAmount = int();
+
+	m_LastWeapon = int();
+	m_QueuedWeapon = int();
+
+	m_EndlessJump = int();
+	m_Jetpack = int();
+	m_NinjaJetpack = int();
+	m_FreezeTime = int();
+	m_FreezeStart = int();
+
+	m_DeepFrozen = int();
+	m_LiveFrozen = int();
+	m_EndlessHook = int();
+	m_DDRaceState = int();
+
+	m_HitDisabledFlags = 0;
+	m_TuneZone = int();
+	m_TuneZoneOld = int();
+
+	m_Time = 0;
+	m_Pos = vec2();
+	m_PrevPos = vec2();
+	m_TeleCheckpoint = int();
+	m_LastPenalty = int();
+
+	m_TimeCpBroadcastEndTime = int();
+	m_LastTimeCp = int();
+	m_LastTimeCpBroadcasted = int();
+
+	for(float & i : m_aCurrentTimeCp)
+		i = int();
+
+	m_NotEligibleForFinish = int();
+
+	m_HasTelegunGun = int();
+	m_HasTelegunGrenade = int();
+	m_HasTelegunLaser = int();
+
+	m_CorePos = vec2();
+	m_Vel = vec2();
+	m_HookHitEnabled = int();
+	m_CollisionEnabled = int();
+	m_ActiveWeapon = int();
+	m_Jumped = int();
+	m_JumpedTotal = int();
+	m_Jumps = int();
+	m_HookPos = vec2();
+	m_HookDir = vec2();
+	m_HookTeleBase = vec2();
+
+	m_HookTick = int();
+
+	m_HookState = int();
+	m_HookedPlayer = int();
+	m_NewHook = int();
+
+	m_InputDirection = int();
+	m_InputJump = int();
+	m_InputFire = int();
+	m_InputHook = int();
+
+	m_ReloadTimer = int();
+
+	FormatUuid(pChr->GameServer()->GameUuid(), m_aGameUuid, sizeof(m_aGameUuid));
+}
+
 bool CSaveTee::Load(CCharacter *pChr, int Team, bool IsSwap)
 {
 	bool Valid = true;
@@ -178,10 +264,10 @@ bool CSaveTee::Load(CCharacter *pChr, int Team, bool IsSwap)
 	pChr->m_Core.m_EndlessHook = m_EndlessHook;
 	pChr->m_DDRaceState = m_DDRaceState;
 
-	pChr->m_Core.m_HammerHitDisabled = m_HitDisabledFlags & CSaveTee::HAMMER_HIT_DISABLED;
-	pChr->m_Core.m_ShotgunHitDisabled = m_HitDisabledFlags & CSaveTee::SHOTGUN_HIT_DISABLED;
-	pChr->m_Core.m_GrenadeHitDisabled = m_HitDisabledFlags & CSaveTee::GRENADE_HIT_DISABLED;
-	pChr->m_Core.m_LaserHitDisabled = m_HitDisabledFlags & CSaveTee::LASER_HIT_DISABLED;
+	pChr->m_Core.m_HammerHitDisabled = m_HitDisabledFlags & HAMMER_HIT_DISABLED;
+	pChr->m_Core.m_ShotgunHitDisabled = m_HitDisabledFlags & SHOTGUN_HIT_DISABLED;
+	pChr->m_Core.m_GrenadeHitDisabled = m_HitDisabledFlags & GRENADE_HIT_DISABLED;
+	pChr->m_Core.m_LaserHitDisabled = m_HitDisabledFlags & LASER_HIT_DISABLED;
 
 	pChr->m_TuneZone = m_TuneZone;
 	pChr->m_TuneZoneOld = m_TuneZoneOld;

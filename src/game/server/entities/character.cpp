@@ -1019,20 +1019,22 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 	m_pPlayer->m_RespawnTick = Server()->Tick() + Server()->TickSpeed() / 2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, (Killer < 0) ? nullptr : GameServer()->m_apPlayers[Killer], Weapon);
 
-	char aBuf[512];
-	if(Killer < 0 || !GameServer()->m_apPlayers[Killer])
-	{
-		str_format(aBuf, sizeof(aBuf), "kill killer='%d:%d:' victim='%d:%d:%s' weapon=%d special=%d",
-			Killer, -1 - Killer,
-			m_pPlayer->GetCid(), m_pPlayer->GetTeam(), Server()->ClientName(m_pPlayer->GetCid()), Weapon, ModeSpecial);
+	if (!g_Config.m_TrainFngMode) {
+		char aBuf[512];
+		if(Killer < 0 || !GameServer()->m_apPlayers[Killer])
+		{
+			str_format(aBuf, sizeof(aBuf), "kill killer='%d:%d:' victim='%d:%d:%s' weapon=%d special=%d",
+				Killer, -1 - Killer,
+				m_pPlayer->GetCid(), m_pPlayer->GetTeam(), Server()->ClientName(m_pPlayer->GetCid()), Weapon, ModeSpecial);
+		}
+		else
+		{
+			str_format(aBuf, sizeof(aBuf), "kill killer='%d:%d:%s' victim='%d:%d:%s' weapon=%d special=%d",
+				Killer, GameServer()->m_apPlayers[Killer]->GetTeam(), Server()->ClientName(Killer),
+				m_pPlayer->GetCid(), m_pPlayer->GetTeam(), Server()->ClientName(m_pPlayer->GetCid()), Weapon, ModeSpecial);
+		}
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 	}
-	else
-	{
-		str_format(aBuf, sizeof(aBuf), "kill killer='%d:%d:%s' victim='%d:%d:%s' weapon=%d special=%d",
-			Killer, GameServer()->m_apPlayers[Killer]->GetTeam(), Server()->ClientName(Killer),
-			m_pPlayer->GetCid(), m_pPlayer->GetTeam(), Server()->ClientName(m_pPlayer->GetCid()), Weapon, ModeSpecial);
-	}
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "game", aBuf);
 
 	// send the kill message
 	if(SendKillMsg && (Team() == TEAM_FLOCK || Teams()->TeamFlock(Team()) || Teams()->Count(Team()) == 1 || Teams()->GetTeamState(Team()) == CGameTeams::TEAMSTATE_OPEN || !Teams()->TeamLocked(Team())))
@@ -1057,7 +1059,7 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCid()] = 0;
-	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCid(), TeamMask());
+	if (!g_Config.m_TrainFngMode) GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCid(), TeamMask());
 	Teams()->OnCharacterDeath(GetPlayer()->GetCid(), Weapon);
 }
 
@@ -1447,19 +1449,19 @@ void CCharacter::HandleSkippableTiles(int Index)
 		   Collision()->GetFrontCollisionAt(m_Pos.x - GetProximityRadius() / 3.f, m_Pos.y + GetProximityRadius() / 3.f) == TILE_DEATH) &&
 		!m_Core.m_Super && !m_Core.m_Invincible && !(Team() && Teams()->TeeFinished(m_pPlayer->GetCid())))
 	{
-		if(Team() && Teams()->IsPractice(Team()))
+		if(g_Config.m_TrainFngMode && Team() && Teams()->IsPractice(Team()) && GetPlayer()->m_LastTeleTee.GetPos().x)
 		{
-			Freeze();
-			// Rate limit death effects to once per second
-			if(Server()->Tick() - m_pPlayer->m_DieTick >= Server()->TickSpeed())
-			{
-				m_pPlayer->m_DieTick = Server()->Tick();
-				GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE, TeamMask());
-				GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCid(), TeamMask());
-			}
+			GetPlayer()->m_LastTeleTee.Load(this, this->Team(), true);
+			// Freeze();
+			// // Rate limit death effects to once per second
+			// if(Server()->Tick() - m_pPlayer->m_DieTick >= Server()->TickSpeed())
+			// {
+			// 	m_pPlayer->m_DieTick = Server()->Tick();
+			// 	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE, TeamMask());
+			// 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCid(), TeamMask());
+			// }
 		}
-		else
-			Die(m_pPlayer->GetCid(), WEAPON_WORLD);
+		else Die(m_pPlayer->GetCid(), WEAPON_WORLD);
 		return;
 	}
 
