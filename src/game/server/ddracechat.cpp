@@ -13,8 +13,6 @@
 #include "player.h"
 #include "score.h"
 
-#include <optional>
-
 bool CheckClientId(int ClientId);
 
 void CGameContext::ConCreditsGctf(IConsole::IResult *_, void *pUserData)
