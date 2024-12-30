@@ -622,12 +622,11 @@ void CServer::GetClientAddr(int ClientId, char *pAddrStr, int Size) const
 
 const char *CServer::ClientName(int ClientId) const
 {
-	if(ClientId < 0 || ClientId >= MAX_CLIENTS || m_aClients[ClientId].m_State == CServer::CClient::STATE_EMPTY)
+	if(ClientId < 0 || ClientId >= MAX_CLIENTS || m_aClients[ClientId].m_State == CClient::STATE_EMPTY)
 		return "(invalid)";
-	if(m_aClients[ClientId].m_State == CServer::CClient::STATE_INGAME)
+	if(m_aClients[ClientId].m_State == CClient::STATE_INGAME)
 		return m_aClients[ClientId].m_aName;
-	else
-		return "(connecting)";
+	return "(connecting)";
 }
 
 const char *CServer::ClientClan(int ClientId) const

@@ -415,6 +415,17 @@ void CGameContext::ConSpawnSetCurrentPosition(IConsole::IResult *pResult, void *
 	}
 }
 
+void CGameContext::ConSpawnReset(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter *pChr = pSelf->GetPracticeCharacter(pResult);
+	if(pChr)
+	{
+		pChr->GetPlayer()->m_LastTeleTee.Reset(pChr);
+		pSelf->SendChatTarget(pChr->GetPlayer()->GetCid(), "Spawn position updated");
+	}
+}
+
 #define MACRO_ADD_COLUMN(name, sql_name, sql_type, bind_type, default, merge_method) ;
 #define MACRO_RANK_COLUMN(name, sql_name, display_name, order_by) \
 	void CGameContext::ConInstaRank##name(IConsole::IResult *pResult, void *pUserData) \

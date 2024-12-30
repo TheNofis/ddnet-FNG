@@ -91,6 +91,7 @@ public:
 	static void ConTopNumCaps(IConsole::IResult *pResult, void *pUserData);
 	static void ConRankFlagCaptures(IConsole::IResult *pResult, void *pUserData);
 	static void ConSpawnSetCurrentPosition(IConsole::IResult *pResult, void *pUserData);
+	static void ConSpawnReset(IConsole::IResult *pResult, void *pUserData);
 
 #define MACRO_ADD_COLUMN(name, sql_name, sql_type, bind_type, default, merge_method) ;
 #define MACRO_RANK_COLUMN(name, sql_name, display_name, order_by) \

@@ -49,5 +49,7 @@ CONSOLE_COMMAND("top5flags", "?i[rank to start with]", CFGFLAG_CHAT | CFGFLAG_SE
 CONSOLE_COMMAND("top5caps", "?i[rank to start with]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConTopNumCaps, this, "Shows the all time best ranks by amount of flag captures")
 CONSOLE_COMMAND("rank_caps", "?r[player name]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConRankFlagCaptures, this, "Shows the all time flag capture rank of player name (your stats by default)")
 CONSOLE_COMMAND("spawn", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConSpawnSetCurrentPosition, this, "Set spawn position")
+CONSOLE_COMMAND("spawn_reset", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConSpawnReset, this, "reset to default spawn")
+CONSOLE_COMMAND("reset_spawn", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConSpawnReset, this, "reset to default spawn")
 
 #undef CONSOLE_COMMAND
