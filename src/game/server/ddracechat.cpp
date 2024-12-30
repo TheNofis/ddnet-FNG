@@ -83,7 +83,7 @@ void CGameContext::ConCredits(IConsole::IResult *_, void *pUserData)
 		"which is a mod of Teeworlds by the Teeworlds developers.");
 }
 
-void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
+void CGameContext::ConInfo(IConsole::IResult *_, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",

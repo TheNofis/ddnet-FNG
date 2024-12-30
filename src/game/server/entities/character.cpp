@@ -1449,19 +1449,19 @@ void CCharacter::HandleSkippableTiles(int Index)
 		   Collision()->GetFrontCollisionAt(m_Pos.x - GetProximityRadius() / 3.f, m_Pos.y + GetProximityRadius() / 3.f) == TILE_DEATH) &&
 		!m_Core.m_Super && !m_Core.m_Invincible && !(Team() && Teams()->TeeFinished(m_pPlayer->GetCid())))
 	{
-		if(Team() && Teams()->IsPractice(Team()))
+		if(g_Config.m_TrainFngMode && Team() && Teams()->IsPractice(Team()) && GetPlayer()->m_LastTeleTee.GetPos().x)
 		{
-			Freeze();
-			// Rate limit death effects to once per second
-			if(Server()->Tick() - m_pPlayer->m_DieTick >= Server()->TickSpeed())
-			{
-				m_pPlayer->m_DieTick = Server()->Tick();
-				GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE, TeamMask());
-				GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCid(), TeamMask());
-			}
+			GetPlayer()->m_LastTeleTee.Load(this, this->Team(), true);
+			// Freeze();
+			// // Rate limit death effects to once per second
+			// if(Server()->Tick() - m_pPlayer->m_DieTick >= Server()->TickSpeed())
+			// {
+			// 	m_pPlayer->m_DieTick = Server()->Tick();
+			// 	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE, TeamMask());
+			// 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCid(), TeamMask());
+			// }
 		}
-		else
-			Die(m_pPlayer->GetCid(), WEAPON_WORLD);
+		else Die(m_pPlayer->GetCid(), WEAPON_WORLD);
 		return;
 	}
 
